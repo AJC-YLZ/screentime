@@ -1,5 +1,5 @@
 const store = new Map();
-const TOKEN = 'ajc2026'; // 你的口令，之后可以改
+const TOKEN = 'ajc2026';
 
 export default function handler(req, res) {
   const url = new URL(req.url, 'http://localhost');
@@ -8,9 +8,10 @@ export default function handler(req, res) {
     return res.status(403).json({ ok: false, msg: '口令不对' });
   }
 
-  // /api/screentime/toggle/应用名 —— 手机端上报
-  if (parts[0] === 'toggle' && parts[1]) {
-    const app = decodeURIComponent(parts[1]);
+  const action = parts[2];
+
+  if (action === 'toggle' && parts[3]) {
+    const app = decodeURIComponent(parts[3]);
     const now = Date.now();
     const prev = store.get(app);
     const event = !prev || prev.state === 'close' ? 'open' : 'close';
@@ -18,8 +19,7 @@ export default function handler(req, res) {
     return res.json({ ok: true, app, event });
   }
 
-  // /api/screentime/query —— 查记录
-  if (parts[0] === 'query') {
+  if (action === 'query') {
     const now = Date.now();
     const data = [];
     for (const [app, r] of store) {
